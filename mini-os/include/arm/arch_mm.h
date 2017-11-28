@@ -12,6 +12,8 @@ extern uint32_t physical_address_offset;	/* Add this to a virtual address to get
 #define PAGE_SIZE        (1 << PAGE_SHIFT)
 #define PAGE_MASK       (~(PAGE_SIZE-1))
 
+
+
 #define L1_PAGETABLE_SHIFT      12
 
 #define L1_PROT          0

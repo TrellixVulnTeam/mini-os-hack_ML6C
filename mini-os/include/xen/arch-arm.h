@@ -162,6 +162,7 @@
  * - The device tree Xen compatible node is fully described under Linux
  *   at Documentation/devicetree/bindings/arm/xen.txt.
  */
+//#include <mini-os/types.h> // HPZ: Add types header file
 
 #define XEN_HYPERCALL_TAG   0XEA1
 

@@ -3,8 +3,11 @@
 #include <arch_mm.h>
 #include <mini-os/errno.h>
 #include <mini-os/hypervisor.h>
+#include <mini-os/posix/limits.h>
+#include <mini-os/e820.h>
 #include <libfdt.h>
 #include <lib.h>
+#include <mini-os/arch_mm.h>
 
 uint32_t physical_address_offset;
 struct e820entry e820_map[1] = {
@@ -62,7 +65,7 @@ void arch_init_mm(unsigned long *start_pfn_p, unsigned long *max_pfn_p)
             (unsigned long long) mem_base, (unsigned long long) mem_size);
 
     BUG_ON(to_virt(mem_base) > (void *) &_text);          /* Our image isn't in our RAM! */
-    *start_pfn_p = PFN_UP(to_phys(end));
+	*start_pfn_p = PFN_UP(to_phys(end));
     uint64_t heap_len = mem_size - (PFN_PHYS(*start_pfn_p) - mem_base);
     *max_pfn_p = *start_pfn_p + PFN_DOWN(heap_len);
 
@@ -150,7 +153,7 @@ grant_entry_v1_t *arch_init_gnttab(int nr_grant_frames)
     return to_virt(gnttab_table);
 }
 
-unsigned long map_frame_virt(unsigned long mfn)
-{
-    return mfn_to_virt(mfn);
-}
+/** unsigned long map_frame_virt(unsigned long mfn)
+  * {
+  *     return mfn_to_virt(mfn);
+  * } */
