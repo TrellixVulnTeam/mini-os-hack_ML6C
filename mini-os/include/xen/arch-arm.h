@@ -162,7 +162,9 @@
  * - The device tree Xen compatible node is fully described under Linux
  *   at Documentation/devicetree/bindings/arm/xen.txt.
  */
-//#include <mini-os/types.h> // HPZ: Add types header file
+
+// #include <linux/types.h>
+// #include <mini-os/types.h>
 
 #define XEN_HYPERCALL_TAG   0XEA1
 
@@ -200,9 +202,14 @@
 
 #if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 /* Anonymous union includes both 32- and 64-bit names (e.g., r0/x0). */
-# define __DECL_REG(n64, n32) union {          \
-        uint64_t n64;                          \
-        uint32_t n32;                          \
+/*
+ *	HPZ: Changed 
+ *	uint64_t n64; -> unsigned long long n64;
+ *	uint32_t n32; -> unsigned int n32; 
+ */
+# define __DECL_REG(n64, n32) union {				\
+		unsigned long long n64;                     \
+		unsigned int n32;                           \
     }
 #else
 /* Non-gcc sources must always use the proper 64-bit name (e.g., x0). */
@@ -254,33 +261,43 @@ struct vcpu_guest_core_regs
 
     /* Return address and mode */
     __DECL_REG(pc64,         pc32);             /* ELR_EL2 */
-    uint32_t cpsr;                              /* SPSR_EL2 */
+    // uint32_t cpsr;                              [> SPSR_EL2 <]
+	unsigned int cpsr;
 
+    // union {
+    //     uint32_t spsr_el1;       [> AArch64 <]
+    //     uint32_t spsr_svc;       [> AArch32 <]
+    // };
     union {
-        uint32_t spsr_el1;       /* AArch64 */
-        uint32_t spsr_svc;       /* AArch32 */
+        unsigned int spsr_el1;       /* AArch64 */
+        unsigned int spsr_svc;       /* AArch32 */
     };
 
     /* AArch32 guests only */
-    uint32_t spsr_fiq, spsr_irq, spsr_und, spsr_abt;
+    // uint32_t spsr_fiq, spsr_irq, spsr_und, spsr_abt;
+    unsigned int spsr_fiq, spsr_irq, spsr_und, spsr_abt;
 
     /* AArch64 guests only */
-    uint64_t sp_el0;
-    uint64_t sp_el1, elr_el1;
+    // uint64_t sp_el0;
+    // uint64_t sp_el1, elr_el1;
+    unsigned long long sp_el0;
+    unsigned long long sp_el1, elr_el1;
 };
 typedef struct vcpu_guest_core_regs vcpu_guest_core_regs_t;
 DEFINE_XEN_GUEST_HANDLE(vcpu_guest_core_regs_t);
 
 #undef __DECL_REG
 
-typedef uint64_t xen_pfn_t;
+// typedef uint64_t xen_pfn_t;
+typedef unsigned long long xen_pfn_t;
 #define PRI_xen_pfn PRIx64
 
 /* Maximum number of virtual CPUs in legacy multi-processor guests. */
 /* Only one. All other VCPUS must use VCPUOP_register_vcpu_info */
 #define XEN_LEGACY_MAX_VCPUS 1
 
-typedef uint64_t xen_ulong_t;
+// typedef uint64_t xen_ulong_t;
+typedef unsigned long long xen_ulong_t;
 #define PRI_xen_ulong PRIx64
 
 #if defined(__XEN__) || defined(__XEN_TOOLS__)
